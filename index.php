@@ -1,15 +1,85 @@
 <?php
 
 session_start();
-
+$errors = [];
 if (isset($_POST['logout'])) {
 	session_destroy();
 	unset($_SESSION['login']);
 	header("Location: login.php");
 }
 
-?>
+function import_info($failo_kelias) {
+	$failo_kelias_visas = "uploads/" . $failo_kelias;
 
+	$myfile = fopen($failo_kelias_visas, "r") or die("Unable to open file!");
+	
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "cars";
+
+    $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+    // set the PDO error mode to exception
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // $sql = "INSERT INTO users (vardas, pavarde, emailas, telefonas)
+    // VALUES ('$vardas', '$pavarde', '$emailas', '$telefonas')";
+    // // use exec() because no results are returned
+    // $conn->exec($sql);
+
+ 	$stmt = $conn->prepare("INSERT INTO cars (owner, license, model, make, date)
+    VALUES (:owner, :license, :model, :make, :date)");
+    $stmt->bindParam(':owner', $owner);
+    $stmt->bindParam(':license', $license);
+    $stmt->bindParam(':model', $model);
+    $stmt->bindParam(':make', $make);
+    $stmt->bindParam(':date', $date);
+
+    // insert a row
+
+	while (!feof($myfile)) {
+	$informacija_perkelti[] = explode(",", fgets($myfile));
+	}
+	foreach ($informacija_perkelti as $value) {
+	$owner = htmlspecialchars($value[1]);
+	$license = htmlspecialchars($value[2]);
+	$model = htmlspecialchars($value[3]);
+	$make = htmlspecialchars($value[4]);
+	$date = date('l jS \of F Y h:i:s A');
+	$stmt->execute();
+	}
+
+}
+
+
+
+if (isset($_POST["file_submit"])) {
+
+	$target_dir = "uploads/";
+	$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
+	$uploadOk = 1;
+	$imageFileType = pathinfo($target_file,PATHINFO_EXTENSION);
+
+	if($imageFileType != "csv") {
+		$errors[] = "Sorry, only CSV files are allowed.";
+		$uploadOk = 0;
+	}
+
+	if ($uploadOk == 0) {
+		$errors[] = "Sorry, your file was not uploaded.";
+// if everything is ok, try to upload file
+	} else {
+		if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+			$errors[] = "The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded";
+			$file_name_import = basename( $_FILES["fileToUpload"]["name"]);
+			import_info($file_name_import);
+		} else {
+			$errors[] = "Sorry, there was an error uploading your file.";
+		}
+	}
+
+}
+
+?>
 
 <!DOCTYPE html>
 <html>
@@ -22,37 +92,37 @@ if (isset($_POST['logout'])) {
 <body>
 	<div class="container">
 		<div class="row">
-<?php
-if (isset($_SESSION["login"])) {
-?>
-			<div class="col-1">
-				<form method="POST">
-					<button class="btn btn-danger mt-1" name="logout">Log out</button>
-				</form>
+			<?php
+			if (isset($_SESSION["login"])) {
+				?>
+				<div class="col-1">
+					<form method="POST">
+						<button class="btn btn-danger mt-1" name="logout">Log out</button>
+					</form>
+				</div>
+				<div class="col-2">
+					<?php				
+					echo "You are logged in! Your level is " . $_SESSION['lygis'];
+					?>
+				</div>
+
+				<?php				
+			} else {
+				?>
+				<div class="col-1">
+					<form method="POST">
+						<a class="btn btn-danger mt-1" name="login" href="http://localhost/Projektas/php cars/login.php">Log in</a>
+					</form>
+				</div>
+				<div class="col-1">
+					<form method="POST">
+						<a class="btn btn-success mt-1" name="login" href="http://localhost/Projektas/php cars/register.php">Register</a>
+					</form>
+				</div>
 			</div>
-			<div class="col-2">
-<?php				
-echo "You are logged in! Your level is " . $_SESSION['lygis'];
-?>
-			</div>
-		
-<?php				
-} else {
-?>
-			<div class="col-1">
-				<form method="POST">
-					<a class="btn btn-danger mt-1" name="login" href="http://localhost/Projektas/php cars/login.php">Log in</a>
-				</form>
-			</div>
-			<div class="col-1">
-				<form method="POST">
-					<a class="btn btn-success mt-1" name="login" href="http://localhost/Projektas/php cars/register.php">Register</a>
-				</form>
-			</div>
-			</div>
-<?php
-}
-?>
+			<?php
+		}
+		?>
 		<div class="row">
 			<div class="col-4 mt-3">
 				<h3>Prideti automobili</h3>
@@ -73,10 +143,25 @@ echo "You are logged in! Your level is " . $_SESSION['lygis'];
 				<input id="submit" class="form-control btn btn-primary mt-3" type="button" name="submit" value="Submit" 
 				<?php 
 				if (isset($_SESSION["login"])) {
-				if ($_SESSION['lygis'] < 1) { echo "disabled"; } 
+					if ($_SESSION['lygis'] < 1) { echo "disabled"; } 
 				}
 				?>
 				>
+				<div class="mt-5">
+					<h3>Prideti CSVS</h3>
+					<span style="color:red;">
+						<?php 
+						foreach ($errors as $error) {
+							echo $error;
+						}
+						?>
+					</span>
+					<form method="post" enctype="multipart/form-data">
+						Select image to upload:
+						<input class="form-control" type="file" name="fileToUpload" id="fileToUpload">
+						<input class="form-control btn btn-dark mt-3" type="submit" value="Upload file" name="file_submit">
+					</form>
+				</div>
 			</div>
 			<div class="col-8">
 				<h1>Automobiliu sarasas</h1>

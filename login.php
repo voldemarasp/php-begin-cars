@@ -9,7 +9,7 @@
 <body>
 <?php
 session_start();
-
+$errors = [];
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -36,9 +36,9 @@ if (isset($_POST["submit"]) && !empty($_POST["username"]) && !empty($_POST["pass
 		$_SESSION['lygis'] = $result[0]['lygis'];
 		// header("Location: index.php");
 		setcookie("username_sausainis", $result[0]['username'], time() + (86400 * 30), "/");
-	}
-}
-}
+	} else { $errors[] = "Wrong password"; }
+} else { $errors[] = "Wrong info"; }
+} elseif (isset($_POST["submit"])) { $errors[] = "Fill fields"; }
 
 if (isset($_POST['logout'])) {
 	session_destroy();
@@ -89,6 +89,12 @@ echo "You are logged in! Your level is " . $_SESSION['lygis'];
 
 	<div class="row">
 		<div class="col-4 mt-3">
+			<span style="color:red;"><?php 
+foreach ($errors as $error) {
+echo $error;
+}
+?>
+</span>
 			<h3>Log in</h3>
 <form method="POST">
 <input class="form-control" type="text" name="username">

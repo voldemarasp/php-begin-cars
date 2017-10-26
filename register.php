@@ -1,9 +1,55 @@
 <?php
 session_start();
-
+$errors = [];
 if (isset($_SESSION["login"])) { header("Location: index.php"); }
 
-	?>
+	if (isset($_POST["submit"]) && !empty($_POST["username"]) && !empty($_POST["password"])) {
+
+		$servername = "localhost";
+		$username = "root";
+		$password = "";
+		$dbname = "vartotojai";
+
+		try {
+			$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		    
+		    $username = $_POST["username"];
+		    $password = $_POST["password"];
+
+		    $stmt = $conn->query("SELECT * FROM userekai WHERE username='$username'");
+		    $result = $stmt->fetchAll(PDO::FETCH_ASSOC); 
+
+		    if(!empty($result)) {
+		    	$errors[] = "Username exists";
+		    } else {
+			$stmt = $conn->prepare("INSERT INTO userekai (username, password, lygis)
+				VALUES (:username, :password, :level)");
+			$stmt->bindParam(':username', $username);
+			$stmt->bindParam(':password', $password);
+			$stmt->bindParam(':level', $level);
+
+    // insert a row
+			$username = htmlspecialchars($_POST["username"]);
+			$password2 = htmlspecialchars($_POST["password"]);
+			$password = password_hash ($password2, PASSWORD_DEFAULT);
+			$level = "1";
+
+			$stmt->execute();
+			$conn = null;
+			header("Location: login.php");
+			}
+		}
+		catch(PDOException $e)
+		{
+    //echo $sql . "<br>" . $e->getMessage();
+		}
+
+		
+		
+	} elseif (isset($_POST["submit"])) { $errors[] = "Fill your info"; }
+?>
+
 	<!DOCTYPE html>
 	<html>
 	<head>
@@ -28,6 +74,12 @@ if (isset($_SESSION["login"])) { header("Location: index.php"); }
 			</div>
 			<div class="row">
 				<div class="col-4 mt-3">
+<span style="color:red;"><?php 
+foreach ($errors as $error) {
+echo $error;
+}
+?>
+</span>
 					<h3>Register</h3>
 					<form method="POST">
 						<input class="form-control" type="text" name="username">
@@ -92,41 +144,3 @@ if (isset($_SESSION["login"])) { header("Location: index.php"); }
 <script src="script.js"></script>
 </body>
 </html>
-
-	<?php
-
-	if (isset($_POST["submit"])) {
-
-		$servername = "localhost";
-		$username = "root";
-		$password = "";
-		$dbname = "vartotojai";
-
-		try {
-			$conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
-			$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-
-			$stmt = $conn->prepare("INSERT INTO userekai (username, password, lygis)
-				VALUES (:username, :password, :level)");
-			$stmt->bindParam(':username', $username);
-			$stmt->bindParam(':password', $password);
-			$stmt->bindParam(':level', $level);
-
-    // insert a row
-			$username = htmlspecialchars($_POST["username"]);
-			$password2 = htmlspecialchars($_POST["password"]);
-			$password = password_hash ($password2, PASSWORD_DEFAULT);
-			$level = "1";
-
-			$stmt->execute();
-
-		}
-		catch(PDOException $e)
-		{
-    //echo $sql . "<br>" . $e->getMessage();
-		}
-
-		$conn = null;
-		header("Location: login.php");
-	}
