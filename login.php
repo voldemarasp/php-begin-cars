@@ -89,7 +89,7 @@ echo "You are logged in! Your level is " . $_SESSION['lygis'];
 
 	<div class="row">
 		<div class="col-4 mt-3">
-			<span style="color:red;"><?php 
+			<span class="red_error"><?php 
 foreach ($errors as $error) {
 echo $error;
 }

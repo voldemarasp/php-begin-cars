@@ -74,7 +74,7 @@ if (isset($_SESSION["login"])) { header("Location: index.php"); }
 			</div>
 			<div class="row">
 				<div class="col-4 mt-3">
-<span style="color:red;"><?php 
+<span class="red_error"><?php 
 foreach ($errors as $error) {
 echo $error;
 }

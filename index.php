@@ -95,12 +95,12 @@ if (isset($_POST["file_submit"])) {
 			<?php
 			if (isset($_SESSION["login"])) {
 				?>
-				<div class="col-1">
+				<div class="col-md-5 col-lg-1">
 					<form method="POST">
 						<button class="btn btn-danger mt-1" name="logout">Log out</button>
 					</form>
 				</div>
-				<div class="col-2">
+				<div class="col-md-5 col-lg-2">
 					<?php				
 					echo "You are logged in! Your level is " . $_SESSION['lygis'];
 					?>
@@ -109,12 +109,12 @@ if (isset($_POST["file_submit"])) {
 				<?php				
 			} else {
 				?>
-				<div class="col-1">
+				<div class="col-md-6 col-lg-1">
 					<form method="POST">
 						<a class="btn btn-danger mt-1" name="login" href="http://localhost/Projektas/php cars/login.php">Log in</a>
 					</form>
 				</div>
-				<div class="col-1">
+				<div class="col-md-6 col-lg-1">
 					<form method="POST">
 						<a class="btn btn-success mt-1" name="login" href="http://localhost/Projektas/php cars/register.php">Register</a>
 					</form>
@@ -124,8 +124,9 @@ if (isset($_POST["file_submit"])) {
 		}
 		?>
 		<div class="row">
-			<div class="col-4 mt-3">
+			<div class="col-sm-12 col-md-12 col-lg-4 mt-3">
 				<h3>Prideti automobili</h3>
+				<div id="prideti_error" class="red_error"></div>
 				<input id="owner" class="form-control mt-3" type="text" name="owner" placeholder="Owner">
 				<input id="license" class="form-control mt-3" type="text" name="license" placeholder="License">
 				<select id="make" class="form-control mt-3">
@@ -142,14 +143,16 @@ if (isset($_POST["file_submit"])) {
 				</select> 
 				<input id="submit" class="form-control btn btn-primary mt-3" type="button" name="submit" value="Submit" 
 				<?php 
-				if (isset($_SESSION["login"])) {
-					if ($_SESSION['lygis'] < 1) { echo "disabled"; } 
+				if (isset($_SESSION['login'])) {
+				if ($_SESSION['login'] == "logged" && $_SESSION['lygis'] < 1) {
+				 echo "disabled"; 
 				}
+				} else { echo "disabled"; }	
 				?>
 				>
 				<div class="mt-5">
 					<h3>Prideti CSVS</h3>
-					<span style="color:red;">
+					<span class="red_error">
 						<?php 
 						foreach ($errors as $error) {
 							echo $error;
@@ -157,14 +160,23 @@ if (isset($_POST["file_submit"])) {
 						?>
 					</span>
 					<form method="post" enctype="multipart/form-data">
-						Select image to upload:
+						Select file to upload:
 						<input class="form-control" type="file" name="fileToUpload" id="fileToUpload">
-						<input class="form-control btn btn-dark mt-3" type="submit" value="Upload file" name="file_submit">
+						<input class="form-control btn btn-dark mt-3" type="submit" value="Upload file" name="file_submit"
+						<?php 
+						if (isset($_SESSION['login'])) {
+						if ($_SESSION['login'] == "logged" && $_SESSION['lygis'] < 1) {
+						 echo "disabled"; 
+						}
+						} else { echo "disabled"; }	
+						?>
+						>
 					</form>
 				</div>
 			</div>
-			<div class="col-8">
+			<div class="col-sm-12 col-md-12 col-lg-8">
 				<h1>Automobiliu sarasas</h1>
+				<div class="red_error"><?php if (!empty($_GET["error"])) { echo "Your level is to low"; } ?></div>
 				<div class="row">
 					<div class="col-lg-3">
 						<div class="input-group">
@@ -208,6 +220,7 @@ if (isset($_POST["file_submit"])) {
 							<th scope="col">Model</th>
 							<th scope="col">Make</th>
 							<th scope="col">Date</th>
+							<th scope="col">Delete</th>
 						</tr>
 					</thead>
 					<tbody id="lentele">

@@ -1,11 +1,31 @@
 <?php
+session_start();
+
 header("Content-type:application/json");
+
+
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "cars";
 
-if (!empty($_POST["owner"])) {
+
+
+if (!empty($_GET["id"]) && isset($_SESSION['login'])) {
+    if ($_SESSION['lygis'] > 0) {
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    $id = htmlspecialchars($_GET["id"]);
+    $sql = "DELETE FROM cars WHERE id='$id'";
+    } else { header("Location: index.php?error=level"); }
+    if ($conn->query($sql) === TRUE) {
+    header("Location: index.php");
+    } 
+    
+
+    $conn->close();
+    }
+
+if (!empty($_POST["owner"]) && !empty($_POST["license"])) {
 try {
     $conn = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
     // set the PDO error mode to exception

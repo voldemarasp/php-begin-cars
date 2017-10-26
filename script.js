@@ -1,5 +1,12 @@
 $( "#submit" ).click(function() {
 
+    
+
+    if ($("#owner").val() == "" && $("#license").val() == ""){
+      console.log('test');
+      $("#prideti_error").html('Please fill all the fields');
+    } else { $("#prideti_error").html(''); }
+
   $.post("cars.php", 
   {
     owner: $("#owner").val(),
@@ -8,12 +15,11 @@ $( "#submit" ).click(function() {
     make: $("#make").val()
   }, 
   function(data, status){
-
     $.getJSON("cars.php", function(result) {
       $("#lentele").html('');
 
       $.each(result, function(i, field) {
-       $("#lentele").append("<tr><td>" + field.id + "</td><td>" + field.owner + "</td><td>" + field.license + "</td><td>" + field.model +  "</td><td>" + field.make + "</td><td>" + field.date + "</td></tr>");
+       $("#lentele").append("<tr><td>" + field.id + "</td><td>" + field.owner + "</td><td>" + field.license + "</td><td>" + field.model +  "</td><td>" + field.make + "</td><td>" + field.date + "</td><td><a class='btn btn-warning' href='cars.php?id=" + field.id +"'>Delete</a></td></tr>");
      });
     });
   });
@@ -24,7 +30,7 @@ $.getJSON("cars.php", function(result) {
   $("#lentele").html('');
 
   $.each(result, function(i, field) {
-    $("#lentele").append("<tr><td>" + field.id + "</td><td>" + field.owner + "</td><td>" + field.license + "</td><td>" + field.model +  "</td><td>" + field.make + "</td><td>" + field.date + "</td></tr>");
+    $("#lentele").append("<tr><td>" + field.id + "</td><td>" + field.owner + "</td><td>" + field.license + "</td><td>" + field.model +  "</td><td>" + field.make + "</td><td>" + field.date + "</td><td><a class='btn btn-warning' href='cars.php?id=" + field.id +"'>Delete</a></td></tr>");
   });
 });
 
@@ -39,7 +45,7 @@ $("#make_filter").change(function() {
     $("#lentele").html('');
 
       $.each(result, function(i, field) {
-        $("#lentele").append("<tr><td>" + field.id + "</td><td>" + field.owner + "</td><td>" + field.license + "</td><td>" + field.model +  "</td><td>" + field.make + "</td><td>" + field.date + "</td></tr>");
+        $("#lentele").append("<tr><td>" + field.id + "</td><td>" + field.owner + "</td><td>" + field.license + "</td><td>" + field.model +  "</td><td>" + field.make + "</td><td>" + field.date + "</td><td><a class='btn btn-warning' href='cars.php?id=" + field.id +"'>Delete</a></td></tr>");
       });
 
     });
@@ -56,7 +62,7 @@ $("#model_filter").change(function() {
     $("#lentele").html('');
 
       $.each(result, function(i, field) {
-        $("#lentele").append("<tr><td>" + field.id + "</td><td>" + field.owner + "</td><td>" + field.license + "</td><td>" + field.model +  "</td><td>" + field.make + "</td><td>" + field.date + "</td></tr>");
+        $("#lentele").append("<tr><td>" + field.id + "</td><td>" + field.owner + "</td><td>" + field.license + "</td><td>" + field.model +  "</td><td>" + field.make + "</td><td>" + field.date + "</td><td><a class='btn btn-warning' href='cars.php?id=" + field.id +"'>Delete</a></td></tr>");
       });
 
     });
@@ -73,7 +79,7 @@ $("#owner_filter").keyup(function() {
     $("#lentele").html('');
 
       $.each(result, function(i, field) {
-        $("#lentele").append("<tr><td>" + field.id + "</td><td>" + field.owner + "</td><td>" + field.license + "</td><td>" + field.model +  "</td><td>" + field.make + "</td><td>" + field.date + "</td></tr>");
+        $("#lentele").append("<tr><td>" + field.id + "</td><td>" + field.owner + "</td><td>" + field.license + "</td><td>" + field.model +  "</td><td>" + field.make + "</td><td>" + field.date + "</td><td><a class='btn btn-warning' href='cars.php?id=" + field.id +"'>Delete</a></td></tr>");
       });
 
     });
@@ -88,7 +94,7 @@ $("#last_filter").click(function() {
     $("#lentele").html('');
 
       $.each(result, function(i, field) {
-        $("#lentele").append("<tr><td>" + field.id + "</td><td>" + field.owner + "</td><td>" + field.license + "</td><td>" + field.model +  "</td><td>" + field.make + "</td><td>" + field.date + "</td></tr>");
+        $("#lentele").append("<tr><td>" + field.id + "</td><td>" + field.owner + "</td><td>" + field.license + "</td><td>" + field.model +  "</td><td>" + field.make + "</td><td>" + field.date + "</td><td><a class='btn btn-warning' href='cars.php?id=" + field.id +"'>Delete</a></td></tr>");
       });
 
     });
